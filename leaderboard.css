@@ -1,0 +1,1305 @@
+/* --- 1. Global Setup & Variables --- */
+:root {
+    --color-dark-green: #2F4F4F;
+    --color-primary-orange: #EF6C3C;
+    --color-secondary-green: #387038;
+    --color-light-text: #FFFFFF;
+    --color-dark-text: #000000;
+    --color-light-gray: #F0F0F0;
+    --sidebar-width-collapsed: 70px;
+    --sidebar-width-expanded: 250px;
+
+    --color-card-bg: #FFFFFF;
+    --color-accent-progress: #EF6C3C;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: var(--color-light-gray);
+    overflow-x: hidden;
+    background-color: var(--color-light-gray);
+    background-image: url('leaderboardbg.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center center;
+    padding-bottom: 50px;
+}
+
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.dashboard-container.menu-open {
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+.dashboard-container.menu-open::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); 
+    z-index: 150; 
+    transition: opacity 0.3s ease;
+    pointer-events: auto; 
+}
+
+/* --- 3. Sidebar Menu (The Expanding Element) --- */
+.sidebar-menu {
+    width: var(--sidebar-width-collapsed);
+    background-color: #2A3D32;
+    color: var(--color-light-text);
+    flex-shrink: 0;
+    transition: width 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    z-index: 200;
+}
+
+/* ------------------------------------------------------------------- */
+/* 3.1. Top Toggle Button Container (Handles ☰ when collapsed) */
+/* ------------------------------------------------------------------- */
+.sidebar-toggle-top {
+    position: relative;
+    padding: 15px 0;
+    text-align: center;
+    height: 60px;
+}
+
+.sidebar-toggle-top button {
+    background: none;
+    border: none;
+    color: var(--color-light-text);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 10px;
+    transition: opacity 0.1s;
+}
+
+.sidebar-toggle-top .close-menu-btn {
+    display: none;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 20px;
+    padding: 0;
+    line-height: 1;
+    z-index: 10;
+}
+
+/* --------------------------------------------------------------- */
+/* 3.2. Sidebar Header (Organization details, logo/text content) */
+/* --------------------------------------------------------------- */
+.sidebar-header {
+    padding: 0 20px 20px;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 0.3s ease 0.1s, max-height 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    height: 60px;
+}
+
+.sidebar-header .organization-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 0;
+    margin-top: -27px;
+}
+
+.sidebar-header .paw-icon {
+    font-size: 32px;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+
+.sidebar-header .text-content {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.sidebar-header .organization-info p {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.sidebar-header .organization-info small {
+    font-size: 12px;
+    opacity: 0.8;
+    margin: 0;
+}
+
+/* --- 3.3. Navigation Items (List) --- */
+.sidebar-navigation {
+    flex-grow: 1;
+}
+
+.sidebar-navigation ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-navigation li {
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    white-space: nowrap;
+    position: relative;
+    transition: background-color 0.3s ease, margin-right 0.3s ease;
+}
+
+.sidebar-navigation li.active {
+    background-color: var(--color-primary-orange);
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px;
+    margin-right: -1px;
+}
+
+.sidebar-navigation .nav-icon {
+    display: block;
+    padding: 10px 0;
+    font-size: 25px;
+    line-height: 0;
+    min-width: 30px;
+    text-align: center;
+    filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.5)) brightness(1.2);
+    color: var(--color-light-text);
+}
+
+.sidebar-navigation a {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    text-decoration: none;
+    color: var(--color-light-text);
+    margin-left: 15px;
+    font-size: 16px;
+}
+
+/* --- EXPANDED MENU STATE (Triggered by JavaScript) --- */
+.sidebar-menu.expanded {
+    width: var(--sidebar-width-expanded);
+}
+
+.sidebar-menu.expanded .sidebar-toggle-top .menu-toggle {
+    display: none;
+}
+
+.sidebar-menu.expanded .sidebar-toggle-top .close-menu-btn {
+    display: block;
+}
+
+.sidebar-menu.expanded .sidebar-header {
+    opacity: 1;
+    max-height: 200px;
+    padding: 15px 20px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    margin-right: 40px;
+}
+
+.sidebar-menu.expanded .sidebar-navigation li {
+    justify-content: flex-start;
+    padding: 15px 20px;
+}
+
+.sidebar-menu.expanded .sidebar-navigation .nav-icon {
+    display: inline-block;
+    padding: 0;
+}
+
+.sidebar-menu.expanded .sidebar-navigation a {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+
+.sidebar-menu.expanded ~ .main-content-wrapper {
+    margin-left: var(--sidebar-width-collapsed) !important; 
+}
+
+.main-content-wrapper {
+    flex-grow: 1;
+    position: relative;
+    margin-left: var(--sidebar-width-collapsed);
+    transition: margin-left 0.3s ease;
+    min-height: 100vh;
+}
+
+
+/* 4.1 Dashboard Header (Profile, Notif, Search) */
+.dashboard-header {
+    position: fixed;
+    top: 0;
+    left: var(--sidebar-width-collapsed);
+    width: calc(100% - var(--sidebar-width-collapsed));
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    height: 90px;
+    border-bottom: 2px solid var(--color-dark-text);
+    background-color: var(--color-white);
+    background-color: #FFFFFF;
+    height: 90px;
+}
+
+.welcome-section {
+    display: flex;
+    align-items: center;
+    color: var(--color-dark-text);
+}
+
+.welcome-section p {
+    font-size: 14px;
+    opacity: 0.7;
+    margin-bottom: 5px;
+}
+
+.welcome-section .text-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.welcome-section h1 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.user-info-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-profile-summary {
+    display: flex;
+    align-items: center;
+    background-color: #2a3d32;
+    color: var(--color-light-text);
+    padding: 8px 15px;
+    border-radius: 25px;
+}
+
+.user-profile-summary .profile-pic {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+}
+
+.user-details {
+    line-height: 1.2;
+}
+
+.user-details .user-name {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.user-details .user-stats {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.notification-btn,
+.search-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--color-dark-text);
+}
+
+
+/* =======================================================
+   5. LEADERBOARD PAGE CONTENT
+   ======================================================= */
+
+.leaderboard-page {
+    padding-top: 110px;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.category-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    margin-bottom: 30px;
+    padding: 15px 15px;
+    padding-left: 60px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+
+}
+
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    flex-wrap: wrap;
+}
+
+.filter-group p {
+    font-weight: bold;
+    font-size: 15px;
+    color: var(--color-dark-text);
+    margin-right: 15px;
+}
+
+.filter-btn {
+    background: #2A3D32;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--color-light-text);
+    transition: background-color 0.2s, color 0.2s;
+
+    min-width: 80px;
+}
+
+.filter-btn.active {
+    background-color: var(--color-primary-orange);
+    color: var(--color-light-text);
+}
+
+.filter-btn:hover:not(.active) {
+    background-color: #406D6D;
+}
+
+
+/* --- Grid Layout for Main Content --- */
+.leaderboard-content-grid {
+    display: grid;
+    grid-template-columns: 2.5fr 1fr;
+    gap: 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.leaderboard-main-content {
+    padding: 0;
+}
+
+.card {
+    background-color: var(--color-card-bg);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+    border: 1px solid #000000;
+}
+
+h2 {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: var(--color-dark-text);
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    padding: 10px 6px 10px 0;
+
+}
+
+h3 {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: var(--color-dark-text);
+    margin-bottom: 15px;
+}
+
+
+/* --------------------------------------------------------
+   5.1. TOP CONTRIBUTORS (Podium)
+   -------------------------------------------------------- */
+.top-contributors {
+    background-color: #f5f4e6;
+    padding: 30px 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+    border: 1px solid #ccc;
+    border: 5px solid #000000;
+}
+
+.top-contributors h2 {
+    margin-left: 0;
+    text-align: center;
+}
+
+.top-contributors h2::before {
+    content: '';
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    margin-right: 15px;
+    position: relative;
+    top: -2px;
+}
+
+
+
+/* --------------------------------------------------------
+   5.1. TOP CONTRIBUTORS (Podium) - CORRECTED
+   -------------------------------------------------------- */
+.top-contributors {
+    background-color: #f5f4e6;
+    padding: 30px 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+    border: 5px solid #000000;
+}
+
+.top-contributors h2 {
+    margin-left: 0;
+    text-align: center;
+}
+
+.top-contributors h2::before {
+    content: '';
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    margin-right: 15px;
+    position: relative;
+    top: -2px;
+}
+
+
+
+/* PODIUM LAYOUT */
+.podium {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end !important;
+    gap: 30px;
+    height: 360px;
+    padding-top: 40px;
+    position: relative;
+    z-index: 1;
+}
+
+/* BASE RANK CARD */
+.rank-card {
+    width: 120px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* COLORED BAR (BEHIND) */
+.rank-card::before {
+    content: '';
+    width: 100%;
+    border-radius: 10px 10px 0 0;
+    margin-top: auto;
+    display: block;
+}
+
+/* --- INDIVIDUAL BAR HEIGHTS (MATCH SAMPLE EXACTLY) --- */
+.rank-card.first::before {
+    height: 180px;
+    background-color: #FFC024;
+}
+
+.rank-card.second::before {
+    height: 140px;
+    background-color: #A09D94;
+}
+
+.rank-card.third::before {
+    height: 110px;
+    background-color: #F79A51;
+}
+
+/* --- PROFILE PHOTO (fixed) --- */
+.rank-card .profile-photo {
+    position: absolute;
+    top: -100px;
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    background: #ddd;
+    overflow: hidden;
+    border: 4px solid white;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+/* BORDER COLOR MATCHES BAR */
+.rank-card.first .profile-photo {
+    border-color: #FFC024;
+}
+
+.rank-card.second .profile-photo {
+    border-color: #A09D94;
+}
+
+.rank-card.third .profile-photo {
+    border-color: #F79A51;
+}
+
+/* IMAGE INSIDE CIRCLE */
+.rank-card .profile-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* --- RANK BADGES --- */
+.rank-number {
+    position: absolute;
+    top: -100px;
+    right: 20px;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: bold;
+    background-color: #A09D94;
+    border: 2px solid white;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 11;
+}
+
+.rank-card.third .rank-number {
+    background-color: #F79A51;
+    display: flex;
+}
+
+.rank-card.first .rank-trophy {
+    position: absolute;
+    top: -110px;
+    right: 20px;
+    font-size: 28px;
+    z-index: 11;
+    color: #FFC024;
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+    background-color: #FFC024;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+/* LABEL UNDER PHOTO (1st / 2nd / 3rd) */
+.rank-card .rank-label {
+    font-weight: bold;
+    font-size: 35px;
+    text-align: center;
+    bottom: 50px;
+    position: absolute;
+    width: 100%;
+    color: white;
+    z-index: 2;
+    background-color: transparent;
+    border-radius: 5px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+/* NAME & AMOUNT */
+.rank-card .name {
+    font-weight: 600;
+    font-size: 14px;
+    margin-top: 5px;
+    text-align: center;
+}
+
+.rank-card .amount {
+    font-weight: bold;
+    font-size: 1.2em;
+    text-align: center;
+    color: #EF6C3C;
+}
+
+.rank-card.first .amount {
+    color: #EF6C3C;
+}
+
+
+
+
+/* Specific styling for YouTube Icon/Text if desired */
+.rank-you-indicator.youtube {
+    background-color: red;
+    color: #f5f4e6;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 8px;
+    line-height: 1;
+    font-weight: bold;
+    text-transform: uppercase;
+    position: relative;
+    top: -1px;
+}
+
+
+.ranking-list {
+
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.complete-rankings {
+    background-color: #f5f4e6;
+    border: 5px solid #000000;
+    border-radius: 12px;
+}
+
+.complete-rankings h2 {
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-top: 15px;
+}
+
+
+.ranking-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: var(--color-primary-orange) 0.2s;
+    padding: 12px 20px;
+    margin: 0;
+    background-color: transparent;
+
+    box-shadow: none;
+    border-radius: 0;
+    border-top: 5px solid #000000;
+    transition: background-color 0.2s;
+}
+
+.ranking-item:hover {
+    background-color: var(--color-primary-orange, #FFA500);
+    color: #FF4500;
+}
+
+.ranking-item:last-child {
+    border-bottom: none;
+}
+
+.ranking-item:hover {
+    background-color: #F5F5F5;
+    transform: none;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+.ranking-item.active-user {
+    background-color: #f3c889dc;
+    box-shadow: none;
+    padding: 12px 20px;
+
+}
+
+
+.rank-info .rank-circle {
+    background-color: #2A3D32;
+
+    color: var(--color-light-text);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.ranking-item.active-user .rank-circle {
+    background-color: var(--color-primary-orange);
+    color: var(--color-light-text);
+}
+
+
+.ranking-item .rank-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.profile-pic-small img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #2A3D32;
+}
+
+.user-details-small {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.user-details-small .user-name-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-details-small p {
+    font-weight: 600;
+    margin: 0;
+}
+
+.user-details-small small {
+    font-size: 11px;
+    color: #888;
+}
+
+
+.user-details-small {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-details-small p.user-name-small {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+
+.user-badge {
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: bold;
+    color: var(--color-light-text);
+    text-transform: uppercase;
+    line-height: 1;
+    position: relative;
+    top: -1px;
+    display: inline-block;
+    padding: 2px 7px;
+}
+
+
+.user-badge.champion {
+    background-color: #FAB911;
+}
+
+.user-badge.hero {
+    background-color: #00B004;
+}
+
+.user-badge.guardian {
+    background-color: #34B5FF;
+}
+
+.user-badge.supporter {
+    background-color: #FF1521;
+}
+
+.user-badge.babyko {
+    background-color: #7ED957;
+}
+
+.user-badge.friend {
+    background-color: #E2BC2C;
+}
+
+.user-badge.member {
+
+    background-color: #1800AD;
+}
+
+.user-badge.helper {
+    background-color: #CC0000;
+}
+
+.rank-amount {
+    font-weight: bold;
+    color: #F66911;
+    font-size: 1.1em;
+}
+
+.rank-amount small {
+    font-size: 12px;
+    font-weight: normal;
+    color: #888;
+    display: block;
+    text-align: right;
+}
+
+
+/* --------------------------------------------------------
+   5.3. RIGHT COLUMN CARDS (Progress, Achievements, Challenge)
+   -------------------------------------------------------- */
+
+.progress-summary {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 5px;
+    margin-bottom: 20px;
+}
+
+.progress-summary p {
+    font-size: 14px;
+    font-weight: bold;
+    color: #141414;
+    margin: 0;
+}
+
+.progress-summary .value {
+    font-weight: 600;
+    color: var(--color-dark-text);
+}
+
+.progress-summary .value.rank-circle {
+    color: var(--color-primary-orange);
+}
+
+
+
+.level-progress {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #272626;
+}
+
+.level-progress p {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.level-progress .level-target {
+    color: var(--color-primary-orange);
+}
+
+.level-progress small {
+    display: block;
+    text-align: right;
+    font-size: 12px;
+    color: #888;
+}
+
+
+.progress-bar-container {
+    background-color: #6e6c6c;
+    border-radius: 5px;
+    height: 10px;
+    margin: 5px 0 5px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: var(--color-accent-progress);
+    border-radius: 5px;
+    transition: width 0.5s ease;
+}
+
+.progress-card {
+    border: 3px solid #000000;
+}
+
+.achievements-card {
+    border: 3px solid #000;
+}
+
+
+.achievement-list {
+
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.achievement-list li {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 10px solid #EEE;
+    line-height: 1.3;
+    background-color: #ebe7e7;
+}
+
+.achievement-text-content {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.achievement-text-content p {
+    font-weight: bold;
+    font-size: 14px;
+    color: var(--color-dark-text);
+    margin: 0;
+}
+
+.achievement-list li:last-child {
+    border-bottom: none;
+}
+
+.achievement-list .icon {
+    font-size: 1.1em;
+    margin-right: 10px;
+    min-width: 20px;
+    text-align: center;
+
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #2A3D32;
+    background-color: #2A3D32;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+
+}
+
+.achievement-list small {
+    display: block;
+    font-size: 12px;
+    color: #2c2b2b;
+    margin-top: 2px
+}
+
+/* Monthly Challenge Card */
+.challenge-card {
+    background-color: #2A3D32;
+    color: var(--color-light-text);
+    border: none;
+}
+
+.challenge-card h3,
+.challenge-card p {
+    color: var(--color-light-text);
+}
+
+.challenge-progress {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    font-size: 14px;
+    margin: 15px 0 5px;
+}
+
+.challenge-progress .progress-percent {
+    color: var(--color-primary-orange);
+}
+
+.challenge-card .progress-bar-container {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.join-challenge-btn {
+    width: 100%;
+    background-color: var(--color-primary-orange);
+    color: var(--color-light-text);
+    border: none;
+    padding: 12px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.2s;
+}
+
+.join-challenge-btn:hover {
+    background-color: #D65A2C;
+}
+
+@media (max-width: 768px) {
+
+    
+
+    html,
+    body {
+        overflow-x: hidden !important;
+        width: 99vw !important;
+        min-width: 99vw !important;
+        max-width: 99vw !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* 2. Main Content Wrapper: Ensures it is contained */
+    .main-content-wrapper {
+        flex-grow: 1;
+    position: relative;
+    margin-left: var(--sidebar-width-collapsed);
+    transition: margin-left 0.3s ease;
+    min-height: 100vh;
+    }
+
+
+    .dashboard-header {
+        padding: 10px 10px !important;
+        width: calc(100vw - var(--sidebar-width-collapsed)) !important;
+    }
+
+    /* 4. Leaderboard Page: Ensure no internal margins push the content out */
+    .leaderboard-page {
+        margin: 0 !important;
+        padding-top: 80px;
+        padding-left: 9px !important;
+        padding-right: 9px !important;
+    }
+
+    /* 5. Switch content grid to single column */
+    .leaderboard-content-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+        padding: 0px !important;
+        max-width: none !important;
+    }
+
+    /* 6. Filter Buttons: Allow wrapping and reduce spacing */
+    .category-filters {
+        padding: 15px 5px !important;
+        padding-left: 5px !important;
+    }
+
+    .filter-group {
+        flex-wrap: wrap !important;
+        gap: 5px !important;
+    }
+
+    .filter-group p {
+        margin-right: 5px !important;
+    }
+
+
+
+    .welcome-section .text-group h1 {
+        font-size: 1.1em !important;
+        margin-top: 0 !important;
+        margin-bottom: 5px !important;
+        padding: 0 !important;
+    }
+
+    .welcome-section .text-group p {
+        font-size: 0.8em !important;
+    }
+
+
+    .user-profile-summary .profile-pic {
+        width: 26px !important;
+        height: 26px !important;
+        min-width: 26px !important;
+        min-height: 26px !important;
+        margin-right: 0px !important;
+    }
+
+
+    .user-profile-summary .user-details {
+        display: flex !important;
+    }
+
+
+    .user-profile-summary {
+        padding: 5px 8px !important;
+    }
+
+
+    .filter-btn {
+        padding: 3px 6px !important;
+        font-size: 10px !important;
+        line-height: 1.2 !important;
+        min-width: 60px !important;
+    }
+
+
+    .rank-card {
+        width: 100px !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
+ 
+    .rank-card .profile-photo {
+        position: absolute !important;
+        top: -270px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 45px !important;
+        height: 45px !important;
+        border-width: 2px !important;
+    }
+
+    .rank-card.first .profile-photo {
+    top: -270px !important;
+}
+
+
+.rank-card.second .profile-photo {
+    top: -210px !important;
+}
+
+
+.rank-card.third .profile-photo {
+    top: -168px !important;
+}
+
+    
+    .rank-card.first .rank-trophy {
+        position: absolute !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        top: -271px !important;
+        right: 19px !important;
+        width: 18px !important;
+        height: 18px !important;
+        font-size: 9px !important;
+        z-index: 12 !important;
+        border-width: 1px !important;
+
+    }
+
+    
+.rank-card.first .rank-trophy {
+    top: -271px !important;
+}
+
+
+.rank-card.second .rank-number {
+    top: -211px !important;
+}
+
+
+.rank-card.third .rank-number {
+    top: -169px !important;
+}
+
+    
+    .rank-card.first .rank-trophy img,
+    .rank-card.first .rank-trophy svg {
+        width: 100% !important;
+        height: 100% !important;
+        padding: 0;
+    }
+
+    .rank-card::before {
+    position: absolute !important; 
+    top: auto !important; 
+    bottom: 40px !important; 
+    margin-top: 0 !important; 
+}
+
+
+
+    .rank-card.first::before {
+        height: 250px !important;
+    }
+
+    .rank-card.second::before {
+        height: 190px !important;
+    }
+
+    .rank-card.third::before {
+        height: 148px !important;
+    }
+
+   
+    .rank-card .rank-label {
+        bottom: 135px !important;
+        font-size: 18px !important;
+        font-weight: 800 !important;
+        color: white;
+        position: absolute !important;
+        width: 100%;
+        text-align: center;
+        z-index: 1;
+        line-height: 1;
+        text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+    }
+
+    
+    .podium {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: flex-end !important;
+        gap: 15px !important;
+        height: 350px !important;
+        padding-top: 35px !important;
+        
+    }
+
+    .rank-card {
+        width: 100px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        min-height: 80px !important;
+    }
+
+
+    .ranking-item {
+        padding: 10px !important;
+        gap: 5px;
+    }
+
+      
+.rank-card .name {
+    position: absolute !important; 
+    bottom: -5px !important; 
+    margin: 0 !important; 
+    font-size: 14px !important;
+    width: 100% !important; 
+    text-align: center !important;
+    z-index: 5 !important;
+}
+
+
+.rank-card .amount {
+    position: absolute !important; 
+    bottom: -25px !important; 
+    margin: 0 !important; 
+    font-size: 1.1em !important;
+    width: 100% !important; 
+    text-align: center !important;
+     z-index: 5 !important;
+}
+}

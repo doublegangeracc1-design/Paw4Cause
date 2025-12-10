@@ -1,0 +1,792 @@
+/* --- 1. Global Setup & Variables --- */
+:root {
+    --color-dark-green: #2F4F4F;
+    --color-primary-orange: #EF6C3C;
+    --color-secondary-green: #387038;
+    --color-light-text: #FFFFFF;
+    --color-dark-text: #000000;
+    --color-light-gray: #F0F0F0;
+    --sidebar-width-collapsed: 70px;
+    --sidebar-width-expanded: 250px;
+    --color-darker-orange: #d15c2d; 
+    --color-white: #FFFFFF;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: var(--color-light-gray);
+    overflow-x: hidden;
+}
+
+/* --- 2. Dashboard Layout Structure --- */
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+
+.dashboard-container::before {
+    content: '';
+    position: fixed; 
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 150; 
+    opacity: 0; 
+    visibility: hidden; 
+    transition: opacity 0.3s ease, visibility 0s 0.3s; 
+}
+
+
+.dashboard-container.menu-open::before {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0s; 
+}
+
+/* --- 3. Sidebar Menu (The Expanding Element) --- */
+.sidebar-menu {
+width: var(--sidebar-width-collapsed);
+background-color: #2a3d32;
+color: var(--color-light-text);
+flex-shrink: 0;
+transition: width 0.3s ease;
+display: flex;
+flex-direction: column;
+position: fixed; 
+height: 100%;
+top: 0;
+left: 0; 
+z-index: 200; 
+}
+/* ------------------------------------------------------------------- */
+/* 3.1. Top Toggle Button Container (Handles ☰ when collapsed) */
+/* ------------------------------------------------------------------- */
+.sidebar-toggle-top {
+    position: relative; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    height: 60px; 
+}
+
+.sidebar-toggle-top button {
+background: none;
+border: none;
+color: var(--color-light-text);
+font-size: 24px;
+cursor: pointer;
+padding: 10px;
+transition: opacity 0.1s;
+}
+
+.sidebar-toggle-top .close-menu-btn {
+display: none; 
+position: absolute;
+top: 15px; 
+right: 20px;
+font-size: 20px;
+padding: 0; 
+line-height: 1;
+z-index: 10;
+}
+
+/* --------------------------------------------------------------- */
+/* 3.2. Sidebar Header (Organization details, logo/text content) */
+/* --------------------------------------------------------------- */
+.sidebar-header {
+    padding: 0 20px 20px;
+    opacity: 0;
+    max-height: 0; 
+    overflow: hidden;
+    transition: opacity 0.3s ease 0.1s, max-height 0.3s ease;
+    display: flex;
+    align-items: center; 
+    justify-content: flex-start;
+    height: 60px;
+}
+
+.sidebar-header .organization-info {
+    display: flex;
+    flex-direction: row; 
+    align-items: center; 
+    gap: 10px;
+    padding: 0; 
+    margin-top: -27px;
+}
+
+.sidebar-header .paw-icon {
+    font-size: 32px;
+    margin: 0; 
+    flex-shrink: 0;
+}
+
+
+.sidebar-header .text-content {
+    display: flex;
+    flex-direction: column; 
+    line-height: 1.2;
+}
+
+.sidebar-header .organization-info p {
+    font-size: 16px; 
+    font-weight: bold;
+    margin: 0;
+}
+
+.sidebar-header .organization-info small {
+    font-size: 12px;
+    opacity: 0.8;
+    margin: 0;
+}
+
+/* --- 3.3. Navigation Items (List) --- */
+.sidebar-navigation {
+    flex-grow: 1; 
+}
+
+.sidebar-navigation ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-navigation li {
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    white-space: nowrap; 
+    position: relative;
+    transition: background-color 0.3s ease, margin-right 0.3s ease;
+}
+
+.sidebar-navigation li.active {
+    background-color: var(--color-primary-orange);
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px;
+    margin-right: -1px;
+}
+
+.sidebar-navigation .nav-icon {
+    display: block; 
+    padding: 10px 0; 
+    font-size: 25px; 
+    line-height: 0;
+    min-width: 30px; 
+    text-align: center;
+    filter: drop-shadow(0 0 1px rgba(0,0,0,0.5)) brightness(1.2);
+    color: var(--color-light-text); 
+}
+
+.sidebar-navigation a {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    text-decoration: none;
+    color: var(--color-light-text);
+    margin-left: 15px;
+    font-size: 16px;
+}
+
+/* --- EXPANDED MENU STATE (Triggered by JavaScript) --- */
+.sidebar-menu.expanded {
+    width: var(--sidebar-width-expanded);
+}
+
+.sidebar-menu.expanded .sidebar-toggle-top .menu-toggle {
+    display: none; 
+}
+
+.sidebar-menu.expanded .sidebar-toggle-top .close-menu-btn {
+    display: block; 
+}
+
+.sidebar-menu.expanded .sidebar-header {
+    opacity: 1;
+    max-height: 200px;
+    padding: 15px 20px 20px; 
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); 
+    margin-right: 40px; 
+}
+
+.sidebar-menu.expanded .sidebar-navigation li {
+    justify-content: flex-start; 
+    padding: 15px 20px;
+}
+
+.sidebar-menu.expanded .sidebar-navigation .nav-icon {
+    display: inline-block;
+    padding: 0; 
+}
+
+.sidebar-menu.expanded .sidebar-navigation a {
+    opacity: 1; 
+    pointer-events: auto;
+}
+
+
+
+/* ========================================================= */
+/* --- 4. DASHBOARD HEADER STYLES (New/Adjusted) --- */
+/* ========================================================= */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px 15px 80px;
+    height: 90px; 
+    padding: 15px 40px; 
+    border-bottom: 2px solid var(--color-dark-text);
+    background-color: var(--color-white);
+    
+}
+
+.welcome-section {
+    display: flex;
+    align-items: center;
+    color: var(--color-dark-text);
+}
+
+.welcome-section p {
+    font-size: 14px;
+    opacity: 0.7;
+    margin-bottom: 5px;
+}
+.welcome-section .text-group {
+    display: flex;
+    flex-direction: column; 
+}
+
+.welcome-section h1 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.user-info-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-profile-summary {
+    display: flex;
+    align-items: center;
+    background-color: #2a3d32; 
+    color: var(--color-light-text);
+    padding: 8px 15px;
+    border-radius: 25px;
+}
+
+.user-profile-summary .profile-pic {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+}
+
+.user-details {
+    line-height: 1.2;
+}
+
+.user-details .user-name {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.user-details .user-stats {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.notification-btn, .search-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--color-dark-text);
+}
+
+
+.user-badge {
+    display: inline-block;
+    padding: 3px 8px; 
+    margin-left: 5px; 
+    margin-bottom: 5px; 
+    border-radius: 12px; 
+    font-size: 10px; 
+    font-weight: bold;
+    color: var(--color-light-text); 
+    text-transform: uppercase;
+    line-height: 1;
+}
+
+.user-details-small {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1.2;
+}
+
+.user-details-small p {
+    display: inline; 
+}
+
+
+/* ========================================================= */
+/* --- 5. MAIN CONTENT AREA STYLES (New/Adjusted) --- */
+/* ========================================================= */
+.main-content-area {
+    padding: 30px;
+    background-color: var(--color-light-gray);
+    background-image: url('home.jpg'); 
+    background-position: fixed; 
+    background-attachment: fixed;
+}
+
+
+.main-content-wrapper { 
+    display: flex;
+    flex-direction: column; 
+    flex-grow: 1; 
+    min-width: 0;
+    margin-left: var(--sidebar-width-collapsed); 
+    transition: margin-left 0.3s ease;
+}
+
+.main-row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    margin-bottom: 0px;
+    margin-left: 28px;
+}
+.main-row-2 {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+/* --- Card Styles (Containers for content) --- */
+.adoption-card, .trending-card, .upgrade-card {
+    border-radius: 15px;
+    padding: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.trending-content-card {
+    padding: 10px;
+}
+
+
+.card-with-separator {
+    position: relative;
+}
+        
+.card-with-separator::after {
+    content: '';
+    position: absolute;
+    bottom: -15px; 
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px; 
+    height: 3px;
+    background-color: var(--color-dark-text); 
+    border-radius: 2px;
+    display: block; 
+    z-index: 1;
+}
+        
+
+.adoption-card.card-with-separator::after, 
+.upgrade-card.card-with-separator::after {
+    background-color: var(--color-white);
+}
+    
+
+.adoption-card {
+    flex-basis: 68%; 
+    background-color: var(--color-secondary-green);
+    color: var(--color-light-text);
+    min-height: 250px; 
+    display: flex;
+    flex-direction: column;
+    background-image: url('dog1.png'); 
+    background-size: cover; 
+    background-position: center bottom; 
+    background-repeat: no-repeat;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+    background-color: #2a3d32;
+    border: 2px solid #040404;
+    position: relative;
+    
+}
+
+.card-header-row {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    width: 100%;
+    margin-bottom: 10px; 
+    padding: 0;
+    
+}
+
+.adoption-card h2 {
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 1.2;
+    margin-bottom: 10px;
+}
+
+
+.upgrade-card {
+    flex-basis: 68%;
+    min-height: 300px;
+    background-color: #bb4706;
+    color: var(--color-light-text);
+    padding: 30px;
+    background-image: url('dog3.png'); 
+    background-position: right calc(100% + 50px); 
+    background-repeat: no-repeat;
+    background-size: 420px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    border: 2px solid #040404;
+    margin-top: -168px;
+}
+
+
+
+.upgrade-card p {
+    font-size: 0.9em; 
+    color: rgba(255, 255, 255, 0.8); 
+    margin-bottom: 25px; 
+    line-height: 1.5; 
+    max-width: 60%; 
+}
+
+.upgrade-card h1 {
+    font-size: 2.2em; 
+    color: var(--color-light-orange); 
+    font-weight: bold; 
+    margin-bottom: 10px; 
+    line-height: 1.2; 
+    max-width: 350px;
+    
+}
+
+.trending-section {
+    flex-basis: 30%; 
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.trending-updates-btn {
+    display: block;
+    background-color: #0F5E2E; 
+    color: var(--color-light-text);
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.1em;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none; 
+    border-radius: 15px 15px 15px 15px; 
+    cursor: pointer;
+    margin-bottom: 30px; 
+    z-index: 10; 
+    border: 2px solid #040404;
+    
+}
+
+
+.trending-content-card {
+    background: var(--color-white); 
+    border-radius: 15px;
+    padding: 8px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 2px solid #040404; 
+    flex-grow: 1; 
+}
+
+
+.card-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%; 
+    min-height: 250px; 
+    border-radius: 15px; 
+    overflow: hidden; 
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1); 
+}
+
+.trending-image {
+    width: 100%;
+    height: 100%; 
+    display: block;
+    object-fit: cover; 
+    border: 2px solid #040404;
+}
+
+
+.card-text-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 15px;
+    padding-top: 50px; 
+    color: var(--color-light-text);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.0)); 
+}
+
+.card-text-overlay p {
+    margin: 0;
+    font-size: 1.1em;
+    font-weight: 600; 
+    line-height: 1.2;
+}
+
+.card-text-overlay small {
+    display: block;
+    font-size: 0.9em;
+    opacity: 0.8;
+    margin-top: 5px;
+}
+
+.adoption-card .nav-arrow,
+.card-image-wrapper .nav-arrow { 
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none; 
+    color: var(--color-light-text);
+    border: none;
+    font-size: 2em; 
+    padding: 5px 10px;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.6; 
+    transition: opacity 0.2s;
+}
+
+.nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    
+}
+
+.nav-arrow:hover {
+    opacity: 1;
+    background-color: var(--color-primary-orange);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.left-arrow {
+    left: 5px;
+}
+
+.right-arrow {
+    right: 5px;
+}
+
+/* ========================================================= */
+/* --- 6. ACTION BUTTON STYLES (NEW SECTION) --- */
+/* ========================================================= */
+.action-btn-orange, .action-btn-dark {
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s;
+    text-decoration: none;
+}
+
+
+.action-btn-orange {
+    background-color: var(--color-primary-orange);
+    color: var(--color-light-text);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+
+.action-btn-dark {
+    background-color:  #2a3d32; 
+    color: var(--color-light-text);
+    max-width: 200px; 
+    background-color: #2a3d32; 
+    color: var(--color-light-text);
+}
+
+.action-btn-orange:hover, .action-btn-dark:hover {
+    filter: brightness(1.1);
+}
+
+
+/* =======================================================
+   MEDIA QUERIES - TABLET PORTRAIT (MAX WIDTH 768PX)
+========================================================== */
+@media (max-width: 768px) {
+
+    .main-content-wrapper {
+        margin-left: 0 !important; 
+        min-width: 0; 
+        overflow: hidden !important
+    }
+
+    .dashboard-header {
+        padding: 15px 20px 15px 80px; 
+        min-width: 0;
+        position: fixed !important;
+        top: 0;
+        z-index: 10;
+        width: 100%; 
+    }
+
+    .trending-section{
+
+        z-index: 0;
+    }
+  
+    .main-content-wrapper {
+        margin-left: 0; 
+    }
+
+    
+    .main-row,
+    .main-row-2 {
+        flex-direction: column;
+        margin-left: 0; 
+        gap: 40px; 
+    }
+
+
+    .main-content-area {
+        padding: 120px 20px 30px 80px; 
+    }
+
+    /* 3. Card Sizing */
+    .adoption-card, 
+    .trending-section, 
+    .upgrade-card {
+        flex-basis: auto; 
+        width: 100%; 
+        max-width: 100%;
+        padding: 20px; 
+    }
+
+    /* 4. Specific Card Overrides */
+
+    .adoption-card h2 {
+        font-size: 24px;
+    }
+    
+
+    .card-image-wrapper {
+        min-height: 200px; 
+    }
+
+    /* Upgrade Card Text and Background */
+    .upgrade-card {
+        margin-top: 0; 
+        min-height: 250px;
+        background-size: 300px; 
+        background-position: right 10px bottom 10px; 
+    }
+    
+    .upgrade-card h1 {
+        font-size: 1.8em;
+    }
+
+    .upgrade-card p {
+        max-width: 80%; 
+    }
+
+    /* --- Sidebar Mobile Behavior (Overlap Mode) --- */
+
+    
+    .sidebar-menu {
+        width: var(--sidebar-width-collapsed); 
+        left: calc(var(--sidebar-width-expanded) - var(--sidebar-width-collapsed)) * -1;
+    }
+
+
+    .sidebar-menu.expanded {
+        width: var(--sidebar-width-expanded); 
+        left: 0; 
+    }
+
+
+    .sidebar-menu:not(.expanded) .sidebar-header {
+        opacity: 0;
+        max-height: 0; 
+        padding: 0 20px 20px;
+        border-bottom: none;
+        margin-right: 0;
+    }
+    .sidebar-menu:not(.expanded) .sidebar-navigation a {
+        opacity: 0; 
+        pointer-events: none; 
+    }
+
+
+    .sidebar-menu:not(.expanded) .sidebar-toggle-top .menu-toggle {
+        display: block; 
+    }
+
+    .sidebar-menu.expanded .sidebar-toggle-top .close-menu-btn {
+        display: block;
+    }
+    
+    .sidebar-menu.expanded .sidebar-toggle-top .menu-toggle {
+        display: none;
+    }
+
+    .main-content-wrapper::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 199; 
+        display: none;
+    }
+
+    .dashboard-container.menu-open .main-content-wrapper::before {
+        display: block;
+    }
+
+    .welcome-section {
+        min-width: 0;
+        overflow: hidden; 
+        flex-shrink: 1; 
+    }
+
+    .main-row,
+    .main-row-2 {
+        flex-direction: column;
+        margin-left: 0; 
+        gap: 40px; 
+    }
+} 

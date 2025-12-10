@@ -1,0 +1,1073 @@
+
+:root {
+    --color-dark-green: #2F4F4F;
+    --color-primary-orange: #EF6C3C;
+    --color-secondary-green: #387038;
+    --color-light-text: #FFFFFF;
+    --color-dark-text: #000000;
+    --color-light-gray: #F0F0F0;
+    --sidebar-width-collapsed: 70px;
+    --sidebar-width-expanded: 250px;
+    --color-white: #FFFFFF;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: var(--color-light-gray);
+    overflow-x: hidden;
+    background-image: url(profile.jpg);
+    background-size: cover;
+    background-position: fill;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: var(--color-light-gray);
+}
+
+/* --- 2. Dashboard Layout Structure --- */
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.dashboard-container.menu-open {
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+.dashboard-container.menu-open::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); 
+    z-index: 90; 
+    transition: opacity 0.3s ease;
+    pointer-events: auto; 
+}
+
+/* --- 3. Sidebar Menu (The Expanding Element) --- */
+.sidebar-menu {
+    position: fixed;
+    top: 0;
+    height: 100vh;
+    width: var(--sidebar-width-collapsed);
+    background-color: #2a3d32;
+    color: var(--color-light-text);
+    flex-shrink: 0;
+    transition: width 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+}
+
+/* ------------------------------------------------------------------- */
+/* 3.1. Top Toggle Button Container (Handles ☰ when collapsed) */
+/* ------------------------------------------------------------------- */
+.sidebar-toggle-top {
+    position: relative;
+    padding: 15px 0;
+    text-align: center;
+    height: 60px;
+}
+
+.sidebar-toggle-top button {
+    background: none;
+    border: none;
+    color: var(--color-light-text);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 10px;
+    transition: opacity 0.1s;
+}
+
+.sidebar-toggle-top .close-menu-btn {
+    display: none;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 20px;
+    padding: 0;
+    line-height: 1;
+    z-index: 10;
+}
+
+/* --------------------------------------------------------------- */
+/* 3.2. Sidebar Header (Organization details, logo/text content) */
+/* --------------------------------------------------------------- */
+.sidebar-header {
+    padding: 0 20px 20px;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 0.3s ease 0.1s, max-height 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    height: 60px;
+}
+
+.sidebar-header .organization-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 0;
+    margin-top: -27px;
+}
+
+.sidebar-header .paw-icon {
+    font-size: 32px;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+
+.sidebar-header .text-content {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.sidebar-header .organization-info p {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.sidebar-header .organization-info small {
+    font-size: 12px;
+    opacity: 0.8;
+    margin: 0;
+}
+
+/* --- 3.3. Navigation Items (List) --- */
+.sidebar-navigation {
+    flex-grow: 1;
+}
+
+.sidebar-navigation ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-navigation li {
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    white-space: nowrap;
+    position: relative;
+    transition: background-color 0.3s ease, margin-right 0.3s ease;
+}
+
+.sidebar-navigation li.active {
+    background-color: var(--color-primary-orange);
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px;
+    margin-right: -1px;
+}
+
+.sidebar-navigation .nav-icon {
+    display: block;
+    padding: 10px 0;
+    font-size: 25px;
+    line-height: 0;
+    min-width: 30px;
+    text-align: center;
+    filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.5)) brightness(1.2);
+    color: var(--color-light-text);
+}
+
+.sidebar-navigation a {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    text-decoration: none;
+    color: var(--color-light-text);
+    margin-left: 15px;
+    font-size: 16px;
+}
+
+/* --- EXPANDED MENU STATE (Triggered by JavaScript) --- */
+.sidebar-menu.expanded {
+    width: var(--sidebar-width-expanded);
+}
+
+.sidebar-menu.expanded .sidebar-toggle-top .menu-toggle {
+    display: none;
+}
+
+.sidebar-menu.expanded .sidebar-toggle-top .close-menu-btn {
+    display: block;
+}
+
+.sidebar-menu.expanded .sidebar-header {
+    opacity: 1;
+    max-height: 200px;
+    padding: 15px 20px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    margin-right: 40px;
+}
+
+.sidebar-menu.expanded .sidebar-navigation li {
+    justify-content: flex-start;
+    padding: 15px 20px;
+}
+
+.sidebar-menu.expanded .sidebar-navigation .nav-icon {
+    display: inline-block;
+    padding: 0;
+}
+
+.sidebar-menu.expanded .sidebar-navigation a {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ========================================================= */
+/* --- 4. DASHBOARD HEADER STYLES (New/Adjusted) --- */
+/* ========================================================= */
+.dashboard-header {
+    position: fixed;
+    top: 0;
+    left: var(--sidebar-width-collapsed);
+    width: calc(100% - var(--sidebar-width-collapsed));
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    height: 90px;
+    border-bottom: 2px solid var(--color-dark-text);
+    background-color: var(--color-white);
+    height: 90px;
+}
+
+.profile-section {
+    display: flex;
+    align-items: center;
+    color: var(--color-dark-text);
+}
+
+.profile-section p {
+    font-size: 14px;
+    opacity: 0.7;
+    margin-bottom: 5px;
+}
+
+.profile-section .text-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-section h1 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.user-info-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-profile-summary {
+    display: flex;
+    align-items: center;
+    background-color: #2a3d32;
+    color: var(--color-light-text);
+    padding: 8px 15px;
+    border-radius: 25px;
+}
+
+.user-profile-summary .profile-pic {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+}
+
+.user-details {
+    line-height: 1.2;
+}
+
+.user-details .user-name {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.user-details .user-stats {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.notification-btn,
+.search-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--color-dark-text);
+}
+
+.main-content-wrapper {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    margin: auto;
+    margin-left: calc(var(--sidebar-width-collapsed) + 40px);
+    margin-right: auto;
+    transition: margin-left 0.3s ease;
+    overflow-x: hidden !important;
+}
+
+.main-row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    margin-bottom: 0px;
+}
+
+.main-row-2 {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.main-content-area {
+    padding: 20px 0px;
+    flex-grow: 1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+/* ========================================================= */
+/* --- 5. MAIN PROFILE CONTENT STYLES --- */
+/* ========================================================= */
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 100%;
+    margin-top: 100px;
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+
+.card {
+    background-color: var(--color-white);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* ------------------------------------------------------------------- */
+/* 5.1. Profile Header Card (Top Green Area) */
+/* ------------------------------------------------------------------- */
+.profile-header-card {
+    background-color: #00532b;
+    color: var(--color-light-text);
+    padding: 30px 40px;
+    border-radius: 15px;
+    border: 3px solid var(--color-dark-text);
+}
+
+.profile-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.profile-img-container {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background-color: var(--color-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-right: 20px;
+}
+
+.main-profile-pic {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile-text {
+    flex-grow: 1;
+    margin-right: auto;
+}
+
+.profile-text h2 {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.profile-text .member-since {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.edit-profile-btn {
+    background-color: #f75c00;
+    color: var(--color-light-text);
+    border: none;
+    padding: 10px 25px;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+    border: 2px solid var(--color-dark-text);
+    text-decoration: none;
+}
+
+.edit-profile-btn:hover {
+    background-color: #d95d32;
+}
+
+/* Profile Tags (Active Donor, Animal Lover, etc.) */
+.profile-tags {
+    display: flex;
+    gap: 10px;
+    padding-left: 110px;
+}
+
+
+.tag-btn {
+    background: #3f6850;
+    color: var(--color-light-text);
+    border: none;
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 14px;
+    cursor: default;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.tag-btn {
+    background-color: #f75c00;
+    color: var(--color-light-text);
+    border: none;
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border: 2px solid var(--color-dark-text);
+}
+
+.tag-btn:hover {
+    background-color: #d95d32;
+}
+
+/* ------------------------------------------------------------------- */
+/* 5.2. Profile Content Grid (Contact, Stats, Activity) */
+/* ------------------------------------------------------------------- */
+.profile-content-grid {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.left-column {
+    flex-basis: 30%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+
+}
+
+.right-column {
+    flex-basis: 70%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+
+}
+
+/* Contact Info */
+.contact-info-card {
+    background-color: var(--color-white);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 3px solid var(--color-dark-text);
+}
+
+/* Contact Info */
+.contact-info-card h3,
+.membership-status-card h3,
+.recent-activity-card h3 {
+    color: var(--color-dark-text);
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.contact-info-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.contact-info-card li {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    border-left: 3px solid var(--color-primary-orange);
+    padding-left: 15px;
+    position: relative;
+}
+
+.contact-info-card li::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: -6px;
+    width: 10px;
+    height: 10px;
+    background-color: var(--color-primary-orange);
+    border-radius: 50%;
+}
+
+.contact-info-card li span {
+    font-weight: bold;
+    font-size: 14px;
+    color: #4a4a4a;
+}
+
+.contact-info-card li p {
+    font-size: 14px;
+    margin-top: 3px;
+    color: var(--color-dark-text);
+
+}
+
+.contact-info-card li .fas {
+    display: none;
+
+}
+
+
+
+.membership-status-card {
+    text-align: center;
+    border: 3px solid var(--color-dark-text);
+
+}
+
+.status-details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 16px;
+    padding: 0 10px;
+
+}
+
+.status-details .balance-amount {
+    font-weight: bold;
+    color: var(--color-secondary-green);
+}
+
+.member-status {
+    font-weight: bold;
+}
+
+.upgrade-btn {
+    width: 100%;
+    background-color: #f75e00;
+    color: #fded8f;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.2s;
+    border: 2px solid var(--color-dark-text);
+
+}
+
+.upgrade-btn:hover {
+    background-color: #d95d32;
+}
+
+
+.stats-row {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+
+}
+
+.stat-box {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-light-gray);
+    border-radius: 15px;
+    padding: 20px 15px;
+    text-align: center;
+    flex: 1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
+    border: 3px solid var(--color-dark-text);
+
+}
+
+.stat-box .icon {
+    font-size: 24px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.stat-box .stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 5px 0;
+    color: #2a3d32;
+
+}
+
+.stat-box .stat-label {
+    font-size: 12px;
+    color: #666;
+}
+
+/* Recent Activity */
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 8px 0;
+    cursor: pointer;
+    text-align: left;
+    border-bottom: 1px solid var(--color-light-gray);
+    transition: background-color 0.2s;
+}
+
+.activity-item:hover {
+    background-color: #f9f9f9;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-item>div {
+    flex-grow: 1;
+    margin-left: 15px;
+    min-height: 35px;
+    display: flex;
+    min-height: 35px;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.activity-item p {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0;
+}
+
+.activity-item small {
+    font-size: 12px;
+    color: #888;
+}
+
+.activity-item .date {
+    font-size: 12px;
+    color: #888;
+    flex-shrink: 0;
+}
+
+.activity-item .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+
+.recent-activity-card {
+    border: 3px solid var(--color-dark-text);
+}
+
+.activity-item .dot.orange {
+    background-color: var(--color-primary-orange);
+}
+
+.activity-item .dot.red {
+    background-color: #E74C3C;
+}
+
+.activity-item .dot.green {
+    background-color: var(--color-secondary-green);
+}
+
+
+/* ------------------------------------------------------------------- */
+/* 5.3. Achievements Section (Bottom Row) */
+/* ------------------------------------------------------------------- */
+.achievements-card {
+    background-color: #00532b;
+    color: var(--color-light-text);
+    border: 3px solid var(--color-dark-text);
+}
+
+.achievements-card h3 {
+    color: var(--color-light-text);
+    margin-bottom: 20px;
+}
+
+.achievements-scroll-container {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    padding: 0px 0px;
+}
+
+.achievements-list {
+    flex-grow: 1;
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 10px 0;
+    -webkit-overflow-scrolling: touch;
+}
+
+
+
+.achievements-list::-webkit-scrollbar {
+    display: none;
+}
+
+.achievements-list {
+   flex-grow: 1;
+    display: flex;
+    gap: 10px;
+    overflow-x: auto; 
+    padding: 10px 0;
+    -webkit-overflow-scrolling: touch;
+}
+
+.achievement-item {
+    min-width: 140px;
+    background-color: #fded8f;
+    color: var(--color-dark-text);
+    border: none;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    flex-shrink: 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 3px solid var(--color-dark-text);
+}
+
+.achievement-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.achievement-item .icon {
+    font-size: 30px;
+    margin-bottom: 10px;
+    display: block;
+    filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.5));
+}
+
+.achievement-item p {
+    font-weight: bold;
+    font-size: 15px;
+    margin: 5px 0;
+}
+
+.achievement-item small {
+    font-size: 12px;
+    color: #666;
+}
+
+
+.scroll-arrow {
+    background: rgba(0, 0, 0, 0.3);
+    color: var(--color-light-text);
+    border: none;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 5;
+    transition: background-color 0.2s;
+    font-size: 18px;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.scroll-arrow:hover {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.left-arrow {
+    margin-right: 10px;
+}
+
+.right-arrow {
+    margin-left: 10px;
+}
+
+/* ========================================================= */
+/* --- 6. EXPANDED DASHBOARD STATE (Adjustment for content) --- */
+/* ========================================================= */
+.dashboard-container.expanded .dashboard-header {
+    left: var(--sidebar-width-expanded);
+    width: calc(100% - var(--sidebar-width-expanded));
+    transition: left 0.3s ease, width 0.3s ease;
+}
+
+.dashboard-container.expanded .main-content-wrapper {
+    margin-left: calc(var(--sidebar-width-expanded) + 40px);
+    transition: margin-left 0.3s ease;
+}
+
+@media (max-width: 768px) {
+
+    
+    html,
+    body {
+        overflow-x: hidden !important;
+    }
+
+    .dashboard-header {
+        padding: 10px 10px !important;
+        width: calc(100vw - var(--sidebar-width-collapsed)) !important;
+    }
+
+    .profile-section .text-group h1 {
+        font-size: 1.1em !important;
+        margin-top: 0 !important;
+        margin-bottom: 5px !important;
+        padding: 0 !important;
+    }
+
+    .profile-section .text-group p {
+        font-size: 0.8em !important;
+    }
+
+    .sidebar-menu.expanded .sidebar-header,
+    .sidebar-menu.expanded .sidebar-navigation a,
+    .sidebar-menu.expanded .sidebar-toggle-top .close-menu-btn {
+        display: flex !important;
+    }
+
+
+    .main-content-wrapper {
+        margin-left: 25px !important;
+        width: 20px !important;
+        overflow-x: hidden !important;
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        margin-top: 75px !important;
+    }
+
+
+    .dashboard-header {
+        padding: 10px 10px !important;
+        width: calc(100vw - var(--sidebar-width-collapsed)) !important;
+    }
+
+    .profile-section h1 {
+        font-size: 16px !important;
+    }
+
+    .user-profile-summary {
+        display: flex !important;
+    }
+
+  
+    .main-content {
+        gap: 10px !important;
+    }
+
+    .profile-content-grid {
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+
+    .left-column {
+        gap: 10px !important;
+    }
+
+
+    .card,
+    .profile-header-card,
+    .contact-info-card,
+    .membership-status-card,
+    .recent-activity-card,
+    .achievements-card {
+        padding: 12px !important;
+    }
+
+    .card h3 {
+        font-size: 15px !important;
+        margin-bottom: 10px !important;
+    }
+
+
+    .right-column {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        justify-content: space-between !important;
+        gap: 10px !important;
+    }
+
+    .contact-info-card,
+    .membership-status-card {
+        flex-basis: calc(50% - 5px) !important;
+        width: 171% !important;
+        flex-grow: 0 !important;
+        padding: 12px !important;
+    }
+
+
+    .recent-activity-card {
+        flex-basis: 100% !important;
+        width: 100% !important;
+        flex-grow: 1 !important;
+        order: 3;
+    }
+
+    .stats-row {
+        -ms-overflow-style: none !important;
+        scrollbar-width: none !important;
+        padding-bottom: 5px !important;
+    }
+
+    .stats-row::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    .achievements-list {
+        -ms-overflow-style: none !important;
+        scrollbar-width: none !important;
+        padding-bottom: 5px !important;
+        overflow-x: hidden !important;
+    }
+
+    .achievements-list::-webkit-scrollbar {
+        display: flex !important;
+    }
+
+
+
+    .profile-img-container {
+        width: 55px !important;
+        height: 55px !important;
+    }
+
+    .main-profile-pic {
+        width: 45px !important;
+        height: 45px !important;
+    }
+
+    .profile-text h2 {
+        font-size: 17px !important;
+    }
+
+    .profile-text p {
+        font-size: 12px !important;
+    }
+
+    .edit-profile-btn {
+        padding: 6px 12px !important;
+        font-size: 12px !important;
+    }
+
+    .tag-btn {
+        padding: 4px 8px !important;
+        font-size: 10px !important;
+    }
+
+    .contact-info-card li {
+        margin-bottom: 5px !important;
+    }
+
+    .contact-info-card li p,
+    .contact-info-card li span {
+        font-size: 12px !important;
+    }
+
+    .stats-row {
+        overflow-x: hidden !important;
+        flex-wrap: nowrap !important;
+    }
+
+    .stat-box {
+        min-width: 145px !important;
+        padding: 8px !important;
+    }
+
+    .stat-box .stat-value {
+        font-size: 16px !important;
+    }
+
+    .stat-box .stat-label {
+        font-size: 9px !important;
+    }
+
+    .achievement-item {
+        min-width: 114px !important;
+        padding: 10px !important;
+    }
+
+    .achievement-item p {
+        font-size: 13px !important;
+    }
+
+    .scroll-arrow {
+        display: none !important;
+    }
+}
